@@ -15,6 +15,7 @@ public class Movie {
     private String genre;
     private String language;
     private int durationMinutes;
+    private String imageUrl;
 
     public Movie() {
     }
@@ -73,5 +74,12 @@ public class Movie {
 
     public void setDurationMinutes(int durationMinutes) {
         this.durationMinutes = durationMinutes;
+    }
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
