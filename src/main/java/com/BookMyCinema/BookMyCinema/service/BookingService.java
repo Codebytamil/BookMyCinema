@@ -5,6 +5,7 @@ import com.BookMyCinema.BookMyCinema.model.*;
 import com.BookMyCinema.BookMyCinema.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,21 +28,32 @@ public class BookingService {
     @Autowired
     private SeatRepository seatRepository;
 
+    @Transactional
     public Booking createBooking(BookingRequest request) {
-        // Step A: fetch the actual User and Show from their ids
         User user = userRepository.findById(request.getUserId()).orElse(null);
         Show show = showRepository.findById(request.getShowId()).orElse(null);
 
-        // Step B: calculate total price = show price * number of seats
-        double totalAmount = show.getPrice() * request.getSeatIds().size();
+        // Lock the seats while we check + book them
+        List<Seat> seats = seatRepository.findSeatsForBooking(request.getSeatIds());
 
-        // Step C: create the Booking itself, status PENDING for now
-        Booking booking = new Booking("PENDING", totalAmount, LocalDateTime.now(), user, show);
+        // Check if ANY of these seats are already booked
+        for (Seat seat : seats) {
+            if (seat.isBooked()) {
+                throw new RuntimeException("Seat " + seat.getSeatNumber() + " is already booked");
+            }
+        }
+
+        // Mark all requested seats as booked
+        for (Seat seat : seats) {
+            seat.setBooked(true);
+            seatRepository.save(seat);
+        }
+
+        double totalAmount = show.getPrice() * seats.size();
+        Booking booking = new Booking("CONFIRMED", totalAmount, LocalDateTime.now(), user, show);
         booking = bookingRepository.save(booking);
 
-        // Step D: for each seat id sent, create a BookingSeat linking it to this booking
-        for (Long seatId : request.getSeatIds()) {
-            Seat seat = seatRepository.findById(seatId).orElse(null);
+        for (Seat seat : seats) {
             BookingSeat bookingSeat = new BookingSeat(booking, seat);
             bookingSeatRepository.save(bookingSeat);
         }

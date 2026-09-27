@@ -57,4 +57,14 @@ public class Seat {
     public void setScreen(Screen screen) {
         this.screen = screen;
     }
+    private boolean isBooked = false; // add this field
+
+ // add these getter/setter too
+ public boolean isBooked() {
+     return isBooked;
+ }
+
+ public void setBooked(boolean booked) {
+     isBooked = booked;
+ }
 }

@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -16,7 +16,7 @@ public class UserController {
 
     // POST /api/users -> create a new user
     @PostMapping
-    public User registerUser(@RequestBody User user) {
+    public User registerUser(@Valid @RequestBody User user) {
         return userService.registerUser(user);
     }
 
