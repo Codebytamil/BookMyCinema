@@ -28,6 +28,11 @@ public class MovieController {
     public Movie getMovieById(@PathVariable Long id) {
         return movieService.getMovieById(id);
     }
+    @PutMapping("/{id}")
+    public Movie updateMovie(@PathVariable Long id, @RequestBody Movie updatedMovie) {
+        updatedMovie.setId(id);
+        return movieService.addMovie(updatedMovie);
+    }
 
     // NEW: DELETE /api/movies/{id}
     @DeleteMapping("/{id}")

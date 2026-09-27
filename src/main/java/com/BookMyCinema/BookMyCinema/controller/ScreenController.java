@@ -28,4 +28,9 @@ public class ScreenController {
     public Screen getScreenById(@PathVariable Long id) {
         return screenService.getScreenById(id);
     }
+    @PutMapping("/{id}")
+    public Screen updateScreen(@PathVariable Long id, @RequestBody Screen updatedScreen) {
+        updatedScreen.setId(id);
+        return screenService.addScreen(updatedScreen);
+    }
 }
